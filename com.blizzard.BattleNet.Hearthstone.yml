@@ -27,7 +27,7 @@ modules:
       - type: file
         path: Icons/Hearthstone.png
       - type: file
-        path: Hearthstone.desktop
+        path: DesktopEntries/Hearthstone.desktop
       - type: file
         path: Scripts/Hearthstone
     build-commands:
