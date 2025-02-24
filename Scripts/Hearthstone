@@ -1,4 +1,5 @@
 #!/bin/sh
+# TODO Update WINEPREFIX / var path to use BattleNet Flatpak's var path
 echo "Checking if BattleNet is already installed"
 if [ -d "/var/data/wine/drive_c/Program Files (x86)/Battle.net/" ]; then
   echo "BattleNet is installed"

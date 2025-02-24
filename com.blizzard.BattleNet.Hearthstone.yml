@@ -11,13 +11,22 @@ finish-args:
   - --filesystem=host:ro
   - --filesystem=xdg-run/app/com.discordapp.Discord:create # Required for setting up Discord rich presence
   - --filesystem=xdg-run/gamescope-0:ro # Required for Gamescope on Steam Deck
+  - --filesystem=~/.var/app/com.blizzard.BattleNet:create # Required to use the BattleNet base app's wine directory
   - --socket=pulseaudio
   - --socket=x11
   - --share=network
   - --share=ipc
   - --allow=multiarch
-  - --env=WINEPREFIX=/var/data/wine # The Wine prefix where Windows files and .exe files are installed
+  - --env=WINEPREFIX=~/.var/app/com.blizzard.BattleNet/data/wine # The Wine prefix where Windows files and .exe files are installed
 # - --env=WINEARCH=win32 # Set 32 bit architecture for Wine prefix
+inherit-extensions:
+  - org.freedesktop.Platform.Compat.i386
+  - org.freedesktop.Platform.GL32
+  - org.freedesktop.Platform.ffmpeg-full
+  - org.freedesktop.Platform.ffmpeg_full.i386
+  - org.winehq.WineStaging.gecko
+  - org.winehq.WineStaging.mono
+  - org.winehq.WineStaging.DLLs
 modules:
   - name: Hearthstone
     buildsystem: simple
