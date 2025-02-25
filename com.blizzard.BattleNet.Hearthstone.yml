@@ -17,7 +17,7 @@ finish-args:
   - --share=network
   - --share=ipc
   - --allow=multiarch
-  - --env=WINEPREFIX=~/.var/app/com.blizzard.BattleNet/data/wine # The Wine prefix where Windows files and .exe files are installed
+  - --env=WINEPREFIX=~/.var/app/com.blizzard.BattleNet/data/wine # The Wine prefix where Windows files and .exe files are installed (Causes wine errors because wine does not like relative paths. So this is reset in scripts)
 # - --env=WINEARCH=win32 # Set 32 bit architecture for Wine prefix
 inherit-extensions:
   - org.freedesktop.Platform.Compat.i386

@@ -1,7 +1,8 @@
 #!/bin/sh
-# TODO Update WINEPREFIX / var path to use BattleNet Flatpak's var path
+WINEPREFIX="$(echo ${HOME})/.var/app/com.blizzard.BattleNet/data/wine" # Required to reset the WINEPREFIX here because wine does not like the relative path set in the manifest
+
 echo "Checking if BattleNet is already installed"
-if [ -d "/var/data/wine/drive_c/Program Files (x86)/Battle.net/" ]; then
+if [ -d "${WINEPREFIX}/drive_c/Program Files (x86)/Battle.net/" ]; then
   echo "BattleNet is installed"
 
   echo "Setting up Discord rich presence"
@@ -10,23 +11,13 @@ if [ -d "/var/data/wine/drive_c/Program Files (x86)/Battle.net/" ]; then
       ln -sf {app/com.discordapp.Discord,$XDG_RUNTIME_DIR}/discord-ipc-$i;
   done
 
-  echo "Changing directory to /var/data/wine/drive_c/Program Files (x86)/Battle.net/"
-  cd /var/data/wine/drive_c/Program\ Files\ \(x86\)/Battle.net/
+  echo "Changing directory to ${WINEPREFIX}/drive_c/Program Files (x86)/Battle.net/"
+  cd "${WINEPREFIX}/drive_c/Program Files (x86)/Battle.net/"
 
   echo "Launching BattleNet"
-  wine /var/data/wine/drive_c/Program\ Files\ \(x86\)/Battle.net/Battle.net.exe
+  wine "${WINEPREFIX}/drive_c/Program Files (x86)/Battle.net/Battle.net.exe"
 else
   echo "BattleNet is not installed"
 
-  echo "Initializing Wine prefix"
-  wineboot -i
-
-  echo "Updating Windows registry with Wine graphics keys"
-  wine regedit /app/share/WineGraphics.reg
-
-  echo "Waiting for registry updates to be applied"
-  sleep 3
-
-  echo "Launching BattleNetSetup.exe"
-  wine /app/bin/BattleNetSetup.exe
+  echo "Launching BattleNet Flatpak"
 fi
