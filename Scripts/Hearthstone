@@ -14,8 +14,8 @@ if [ -d "${WINEPREFIX}/drive_c/Program Files (x86)/Battle.net/" ]; then
   echo "Changing directory to ${WINEPREFIX}/drive_c/Program Files (x86)/Battle.net/"
   cd "${WINEPREFIX}/drive_c/Program Files (x86)/Battle.net/"
 
-  echo "Launching BattleNet"
-  wine "${WINEPREFIX}/drive_c/Program Files (x86)/Battle.net/Battle.net.exe"
+  echo "Launching BattleNet and switching to Hearthstone"
+  wine "${WINEPREFIX}/drive_c/Program Files (x86)/Battle.net/Battle.net.exe" --exec="launch WTCG"
 else
   echo "BattleNet is not installed"
 
