@@ -1,9 +1,9 @@
 #!/bin/sh
-WINEPREFIX="$(echo ${HOME})/.var/app/com.blizzard.BattleNet/data/wine" # Required to reset the WINEPREFIX here because wine does not like the relative path set in the manifest
+WINEPREFIX="$(echo ${HOME})/.var/app/com.blizzard.Battle.net/data/wine" # Required to reset the WINEPREFIX here because wine does not like the relative path set in the manifest
 
-echo "Checking if BattleNet is already installed"
+echo "Checking if Battle.net is already installed"
 if [ -d "${WINEPREFIX}/drive_c/Program Files (x86)/Battle.net/" ]; then
-  echo "BattleNet is installed"
+  echo "Battle.net is installed"
 
   echo "Setting up Discord rich presence"
   for i in {0..9}; do
@@ -14,11 +14,11 @@ if [ -d "${WINEPREFIX}/drive_c/Program Files (x86)/Battle.net/" ]; then
   echo "Changing directory to ${WINEPREFIX}/drive_c/Program Files (x86)/Battle.net/"
   cd "${WINEPREFIX}/drive_c/Program Files (x86)/Battle.net/"
 
-  echo "Launching BattleNet and switching to Hearthstone"
+  echo "Launching Battle.net and switching to Hearthstone"
   wine "${WINEPREFIX}/drive_c/Program Files (x86)/Battle.net/Battle.net.exe" --exec="launch WTCG"
 else
-  echo "BattleNet is not installed"
+  echo "Battle.net is not installed"
 
-  echo "Launching BattleNet Flatpak"
-  flatpak-spawn --host flatpak run com.blizzard.BattleNet
+  echo "Launching Battle.net Flatpak"
+  flatpak-spawn --host flatpak run com.blizzard.Battle.net
 fi
