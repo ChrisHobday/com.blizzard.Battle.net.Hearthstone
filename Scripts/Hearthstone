@@ -20,4 +20,5 @@ else
   echo "BattleNet is not installed"
 
   echo "Launching BattleNet Flatpak"
+  flatpak-spawn --host flatpak run com.blizzard.BattleNet
 fi
