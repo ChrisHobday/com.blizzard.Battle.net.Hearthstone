@@ -1,24 +1,24 @@
-app-id: com.blizzard.BattleNet.Hearthstone
+app-id: com.blizzard.Battle.net.Hearthstone
 sdk: org.freedesktop.Sdk
 runtime: org.freedesktop.Platform
 runtime-version: '24.08'
-base: com.blizzard.BattleNet
+base: com.blizzard.Battle.net
 command: Hearthstone
 rename-desktop-file: Hearthstone.desktop
 rename-icon: Hearthstone
 finish-args:
   - --device=all
-  - --talk-name=org.freedesktop.Flatpak # Required for use of flatpak-spawn to launch the BattleNet Flatpak if it's not already installed
+  - --talk-name=org.freedesktop.Flatpak # Required for use of flatpak-spawn to launch the Battle.net Flatpak if it's not already installed
   - --filesystem=host:ro
   - --filesystem=xdg-run/app/com.discordapp.Discord:create # Required for setting up Discord rich presence
   - --filesystem=xdg-run/gamescope-0:ro # Required for Gamescope on Steam Deck
-  - --filesystem=~/.var/app/com.blizzard.BattleNet:create # Required to use the BattleNet base app's wine directory
+  - --filesystem=~/.var/app/com.blizzard.Battle.net:create # Required to use the Battle.net base app's wine directory
   - --socket=pulseaudio
   - --socket=x11
   - --share=network
   - --share=ipc
   - --allow=multiarch
-  - --env=WINEPREFIX=~/.var/app/com.blizzard.BattleNet/data/wine # The Wine prefix where Windows files and .exe files are installed (Causes wine errors because wine does not like relative paths. So this is reset in scripts)
+  - --env=WINEPREFIX=~/.var/app/com.blizzard.Battle.net/data/wine # The Wine prefix where Windows files and .exe files are installed (Causes wine errors because wine does not like relative paths. So this is reset in scripts)
   # - --env=WINEARCH=win32 # Set 32 bit architecture for Wine prefix
 inherit-extensions:
   - org.freedesktop.Platform.Compat.i386
@@ -33,7 +33,7 @@ modules:
     buildsystem: simple
     sources:
       - type: file
-        path: com.blizzard.BattleNet.Hearthstone.metainfo.xml
+        path: com.blizzard.Battle.net.Hearthstone.metainfo.xml
       - type: file
         path: Icons/Hearthstone.png
       - type: file
@@ -42,7 +42,7 @@ modules:
         path: Scripts/Hearthstone
     build-commands:
       - |
-        install -Dm644 com.blizzard.BattleNet.Hearthstone.metainfo.xml -t /app/share/appdata
+        install -Dm644 com.blizzard.Battle.net.Hearthstone.metainfo.xml -t /app/share/appdata
         install -Dm644 Hearthstone.png -t /app/share/icons/hicolor/256x256/apps
         install -Dm644 Hearthstone.desktop -t /app/share/applications
         install -Dm744 Hearthstone -t /app/bin
