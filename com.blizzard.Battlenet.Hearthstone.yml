@@ -1,0 +1,67 @@
+app-id: com.blizzard.Battlenet.Hearthstone
+sdk: org.wine.Sdk
+runtime: org.wine.Platform
+runtime-version: '10.8'
+base: com.blizzard.Battlenet
+# rename-desktop-file: Hearthstone.desktop
+# rename-icon: Hearthstone
+command: Hearthstone.sh
+finish-args:
+  - --device=all
+  - --talk-name=org.freedesktop.Flatpak # Required for use of flatpak-spawn to launch the Battle.net Flatpak
+  - --filesystem=host:ro
+  - --filesystem=xdg-run/app/com.discordapp.Discord:create # Required for setting up Discord rich presence
+  - --filesystem=xdg-run/gamescope-0:ro # Required for Gamescope on Steam Deck
+  - --filesystem=~/.var/app/com.blizzard.Battlenet:create # Required to use the Battle.net base app's wine directory
+  - --socket=pulseaudio
+  - --socket=x11
+  - --share=network
+  - --share=ipc
+  - --allow=multiarch
+  - --env=WINEPREFIX=~/.var/app/com.blizzard.Battlenet/data/wine # The Wine prefix where Windows files and .exe files are installed (Causes wine errors because wine does not like relative paths. So this is also set in scripts.)
+  # - --env=WINEARCH=win32 # Set 32 bit architecture for Wine prefix
+
+inherit-extensions:
+  - org.freedesktop.Platform.Compat.i386
+  - org.freedesktop.Platform.GL32
+  - org.freedesktop.Platform.ffmpeg-full
+  - org.freedesktop.Platform.ffmpeg_full.i386
+
+modules:
+  - name: Hearthstone
+    buildsystem: simple
+    sources:
+      # Hearthstone icon to be installed with apply_extra (Downloaded to /app/extra when user is installing because of extra-data)
+      - type: extra-data
+        url: https://blz-contentstack-images.akamaized.net/v3/assets/blt13393558c8f39060/blt0da018f046d55ddf/644fe21d3c434c65518bd55e/hs.png?
+        sha256: b3c9841e0ac65d0c7ad89f2732aa4b057db2b11c1ccf2e904b7d46b53a06e4ff
+        size: 19908
+        filename: com.blizzard.Battlenet.Hearthstone.png
+
+      # Script that is automatically ran when user is installing, after extra-data is downloaded
+      - type: script
+        dest-filename: apply_extra
+        commands:
+          - |
+            ls
+            # install -Dm644 com.blizzard.Battlenet.Hearthstone.png ./export/share/icons/hicolor/512x512/apps/com.blizzard.Battlenet.Hearthstone.png # Install icon downloaded from extra-data to appropriate icon directory
+
+      - type: file
+        path: Scripts/Hearthstone.sh
+
+      # # Placeholder icon (For storefront metadata) (Will be replaced with downloaded Hearthstone image when user installs)
+      # - type: file
+      #   path: Icons/com.blizzard.Battlenet.Hearthstone.png
+
+      - type: file
+        path: DesktopEntries/com.blizzard.Battlenet.Hearthstone.desktop
+
+      - type: file
+        path: com.blizzard.Battlenet.Hearthstone.metainfo.xml
+
+    build-commands:
+      - |
+        install -Dm744 Hearthstone.sh -t /app/bin
+        # install -Dm644 com.blizzard.Battlenet.Hearthstone.png -t /app/share/icons/hicolor/256x256/apps
+        install -Dm644 com.blizzard.Battlenet.Hearthstone.desktop -t /app/share/applications
+        install -Dm644 com.blizzard.Battlenet.Hearthstone.metainfo.xml -t /app/share/metainfo
