@@ -3,29 +3,41 @@ sdk: org.wine.Sdk
 runtime: org.wine.Platform
 runtime-version: '10.8'
 base: com.blizzard.Battlenet
-# rename-desktop-file: Hearthstone.desktop
-# rename-icon: Hearthstone
+# rename-desktop-file: Hearthstone.desktop # Not needed because desktop file is already named com.blizzard.Battlenet.Hearthstone
+# rename-icon: Hearthstone                 # Not needed because icons are already named com.blizzard.Battlenet.Hearthstone
 command: Hearthstone.sh
 finish-args:
-  - --device=all
-  - --talk-name=org.freedesktop.Flatpak # Required for use of flatpak-spawn to launch the Battle.net Flatpak
-  - --filesystem=host:ro
-  - --filesystem=xdg-run/app/com.discordapp.Discord:create # Required for setting up Discord rich presence
-  - --filesystem=xdg-run/gamescope-0:ro # Required for Gamescope on Steam Deck
-  - --filesystem=~/.var/app/com.blizzard.Battlenet:create # Required to use the Battle.net base app's wine directory
-  - --socket=pulseaudio
-  - --socket=x11
-  - --share=network
-  - --share=ipc
-  - --allow=multiarch
-  - --env=WINEPREFIX=~/.var/app/com.blizzard.Battlenet/data/wine # The Wine prefix where Windows files and .exe files are installed (Causes wine errors because wine does not like relative paths. So this is also set in scripts.)
-  # - --env=WINEARCH=win32 # Set 32 bit architecture for Wine prefix
+  - --allow=multiarch                                            # Access to 32bit libraries (For running 32bit executables)
+  # - --allow=devel                                                # Uses full SDK as the runtime (Access to more debugging tools and other libs)
+  # - --allow=bluetooth                                            # Access to bluetooth
+  # - --device=all                                                 # Access to all devices
+  - --device=dri                                                 # Access to DRI for OpenGL rendering
+  - --device=input                                               # Access to input devices (Controllers, etc)
+  # - --socket=wayland                                             # Access to Wayland socket for display
+  - --socket=fallback-x11                                        # Access to X11 socket for display (Incase wayland doesn't work)
+  - --socket=pulseaudio                                          # Access to pulse audio socket for sound
+  - --share=network                                              # Access to networking
+  - --share=ipc                                                  # Access to host IPC namespace
+  - --talk-name=org.freedesktop.ScreenSaver                      # Can talk to Screensaver (Allows preventing Screensaver)
+  # - --system-talk-name=org.freedesktop.UDisks2                   # Can manage storage devices directly
+  # - --system-talk-name=org.freedesktop.NetworkManager            # Can manage network directly
+  # - --filesystem=host:ro                                         # Read access to common host directories
+  - --filesystem=~/.var/app/com.blizzard.Battlenet:create        # Required to use the Battle.net base app's wine directory
+  - --filesystem=xdg-run/app/com.discordapp.Discord:create       # Read/write access to Discord's running instance (Required for setting up Discord rich presence)
+  - --filesystem=xdg-run/gamescope-0:ro                          # Read access to Gamescope's running instance (Required for Gamescope on Steam Deck)
+  # - --env=WINEARCH=win32                                         # Set Wine to 32bit mode (64bit mode is default)
+  - --env=WINEPREFIX=~/.var/app/com.blizzard.Battlenet/data/wine # The Battle.net Base App's Wine prefix where Windows files and .exe files are installed (Causes wine errors because wine does not like relative paths. So this is also set in scripts.)
 
 inherit-extensions:
-  - org.freedesktop.Platform.Compat.i386
-  - org.freedesktop.Platform.GL32
-  - org.freedesktop.Platform.ffmpeg-full
-  - org.freedesktop.Platform.ffmpeg_full.i386
+  - org.freedesktop.Platform.Compat.i386       # 32bit Linux compatibility
+  - org.freedesktop.Platform.Compat.i386.Debug # 32bit Linux compatibility debug
+  - org.freedesktop.Platform.GL                # OpenGL
+  - org.freedesktop.Platform.GL32              # 32bit OpenGL
+  - org.freedesktop.Platform.GL32.Debug        # 32bit OpenGL Debug
+  - org.freedesktop.Platform.VAAPI.Intel       # Intel VAAPI
+  - org.freedesktop.Platform.VAAPI.Intel.i386  # 32bit Intel VAAPI
+  - org.freedesktop.Platform.ffmpeg-full       # FFmpeg
+  - org.freedesktop.Platform.ffmpeg_full.i386  # 32bit FFmpeg
 
 modules:
   - name: Hearthstone
@@ -36,22 +48,38 @@ modules:
         url: https://blz-contentstack-images.akamaized.net/v3/assets/blt13393558c8f39060/blt0da018f046d55ddf/644fe21d3c434c65518bd55e/hs.png?
         sha256: b3c9841e0ac65d0c7ad89f2732aa4b057db2b11c1ccf2e904b7d46b53a06e4ff
         size: 19908
-        filename: com.blizzard.Battlenet.Hearthstone.png
+        filename: Hearthstone512x512.png
 
       # Script that is automatically ran when user is installing, after extra-data is downloaded
       - type: script
         dest-filename: apply_extra
         commands:
           - |
-            ls
-            # install -Dm644 com.blizzard.Battlenet.Hearthstone.png ./export/share/icons/hicolor/512x512/apps/com.blizzard.Battlenet.Hearthstone.png # Install icon downloaded from extra-data to appropriate icon directory
+            # Resize Hearthstone icon to standard Linux icon sizes (Uses Image Magick binary from parent)
+            magick Hearthstone512x512.png -resize 256x256 Hearthstone256x256.png
+            magick Hearthstone512x512.png -resize 128x128 Hearthstone128x128.png
+            magick Hearthstone512x512.png -resize 64x64 Hearthstone64x64.png
+            magick Hearthstone512x512.png -resize 48x48 Hearthstone48x48.png
+            magick Hearthstone512x512.png -resize 32x32 Hearthstone32x32.png
+            magick Hearthstone512x512.png -resize 24x24 Hearthstone24x24.png
+            magick Hearthstone512x512.png -resize 16x16 Hearthstone16x16.png
+
+            # Install Hearthstone icons to appropriate directories
+            install -Dm644 Hearthstone512x512.png ./export/share/icons/hicolor/512x512/apps/com.blizzard.Battlenet.Hearthstone.png
+            install -Dm644 Hearthstone256x256.png ./export/share/icons/hicolor/256x256/apps/com.blizzard.Battlenet.Hearthstone.png
+            install -Dm644 Hearthstone128x128.png ./export/share/icons/hicolor/128x128/apps/com.blizzard.Battlenet.Hearthstone.png
+            install -Dm644 Hearthstone64x64.png ./export/share/icons/hicolor/64x64/apps/com.blizzard.Battlenet.Hearthstone.png
+            install -Dm644 Hearthstone48x48.png ./export/share/icons/hicolor/48x48/apps/com.blizzard.Battlenet.Hearthstone.png
+            install -Dm644 Hearthstone32x32.png ./export/share/icons/hicolor/32x32/apps/com.blizzard.Battlenet.Hearthstone.png
+            install -Dm644 Hearthstone24x24.png ./export/share/icons/hicolor/24x24/apps/com.blizzard.Battlenet.Hearthstone.png
+            install -Dm644 Hearthstone16x16.png ./export/share/icons/hicolor/16x16/apps/com.blizzard.Battlenet.Hearthstone.png
 
       - type: file
         path: Scripts/Hearthstone.sh
 
-      # # Placeholder icon (For storefront metadata) (Will be replaced with downloaded Hearthstone image when user installs)
-      # - type: file
-      #   path: Icons/com.blizzard.Battlenet.Hearthstone.png
+      # Placeholder icon (For storefront metadata) (Will be replaced with downloaded Hearthstone image when user installs)
+      - type: file
+        path: Icons/com.blizzard.Battlenet.Hearthstone.png
 
       - type: file
         path: DesktopEntries/com.blizzard.Battlenet.Hearthstone.desktop
@@ -61,7 +89,8 @@ modules:
 
     build-commands:
       - |
-        install -Dm744 Hearthstone.sh -t /app/bin
-        # install -Dm644 com.blizzard.Battlenet.Hearthstone.png -t /app/share/icons/hicolor/256x256/apps
-        install -Dm644 com.blizzard.Battlenet.Hearthstone.desktop -t /app/share/applications
-        install -Dm644 com.blizzard.Battlenet.Hearthstone.metainfo.xml -t /app/share/metainfo
+        install -Dm744 apply_extra -t ${FLATPAK_DEST}/bin/                                                        # Install script that will be ran automatically when user installs after extra-data sources are downloaded
+        install -Dm744 Hearthstone.sh -t ${FLATPAK_DEST}/bin                                                      # Install script that will act as the launch command when the Flatpak it is ran
+        install -Dm644 com.blizzard.Battlenet.Hearthstone.png -t ${FLATPAK_DEST}/share/icons/hicolor/256x256/apps # Install placeholder icon (Will be replaced with downloaded Hearthstone image when user installs)
+        install -Dm644 com.blizzard.Battlenet.Hearthstone.desktop -t ${FLATPAK_DEST}/share/applications           # Install desktop file that will be exported for desktop environments to use in their App menus
+        install -Dm644 com.blizzard.Battlenet.Hearthstone.metainfo.xml -t ${FLATPAK_DEST}/share/metainfo          # Install metainfo file
